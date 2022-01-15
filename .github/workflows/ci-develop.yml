@@ -1,0 +1,70 @@
+name: CI Staging
+
+on:
+  pull_request:
+    branches: [develop]
+  push:
+    branches: [develop]
+
+env:
+  NODE_VERSION: '14.x'
+
+jobs:
+  build:
+    name: CI staging
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout from repository
+      uses: actions/checkout@v2
+      # run: echo "Checkout..."
+
+    - name: Cache Dependencies
+      # Cached dependencies can be re-used on every workflow run! Cache is unique to a runner OS.
+      # path to where cache stored in Ubuntu/macOS. Its different path in Windows
+      # Cache is saved 
+      # extra keys which GitHub can search for caches (if GitHub didnt find any cache using the given 'key'), we can have multiple restore keys alsounder this key generated dynamically, based on runner OS & package-lock.json file
+      uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+      # run: echo "Cache dependencies here..."
+    
+    - name: Setup Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v2
+      with:
+       node-version: ${{ env.NODE_VERSION }}
+      # run: echo "Setup Nodejs..."
+
+    - name: Install dependencies
+      run: npm ci
+      # run: echo "Run npm ci..."
+    
+    - name: Do Code Analysis
+      # run: npm run format:check
+      run: echo "Do code analysis here..."
+
+    - name: Run Tests
+      # Run tests & store it on a folder called 'coverage'
+      # run: npm test -- --coverage
+      # env:
+      #   CI: true
+      run: echo "Run tests here..."
+
+    - name: Build Project
+      if: github.event_name == 'push'
+      run: echo "Build the project here..."
+
+    - name: Upload Build Folder as Artifact
+      if: github.event_name == 'push'
+      uses: actions/upload-artifact@v2
+      with:
+        name: build
+        path: build
+      # run: echo "Upload build folder as an artifact here..."
+
+    - name: Deploy to Staging Server
+      if: github.event_name == 'push'
+      run: echo "Deploy the application to staging here..."
