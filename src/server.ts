@@ -11,7 +11,7 @@ const server = express( );
 server.use( express.json() );
 
 server.get(`/`, (req, res) => {
-    res.send(`Welcome to our latest API's!!!`);
+    res.send(`Welcome to our latest API's`);
 });
 
 // server.all( `*`, (req, res) => {
