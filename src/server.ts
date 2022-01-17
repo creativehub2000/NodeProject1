@@ -10,13 +10,9 @@ const PORT = process.env.PORT  || 3000;
 const server = express( );
 server.use( express.json() );
 
-server.get(`/`, (req, res) => {
-    res.send(`Welcome to our latest API's!!!`);
+server.all( `*`, (req, res) => {
+     res.status( 200 ).send( `Welcome to our API's!` );
 });
-
-// server.all( `*`, (req, res) => {
-//     res.status( 200 ).send( `Welcome to our API's` );
-// });
 
 server.listen( PORT, ( ) => {
     console.log(`Server running at ${PORT}...`);
