@@ -1,21 +1,20 @@
-name: CI Staging
+name: CI
 
 on:
   pull_request:
-    branches: [develop]
+    branches: [develop, master]
   push:
-    branches: [develop]
+    branches: [develop, master]
 
 env:
   NODE_VERSION: '14.x'
 
 jobs:
   build:
-    name: CI staging
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout from repository
+    - name: Checkout repository
       uses: actions/checkout@v2
       # run: echo "Checkout..."
 
@@ -53,6 +52,13 @@ jobs:
       #   CI: true
       run: echo "Run tests here..."
 
+    - name: Upload Code Coverage as Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Code Coverage
+        path: coverage
+      # run: echo "Upload code coverage as an artifact here..."
+
     - name: Build Project
       if: github.event_name == 'push'
       run: echo "Build the project here..."
@@ -61,10 +67,20 @@ jobs:
       if: github.event_name == 'push'
       uses: actions/upload-artifact@v2
       with:
-        name: build
+        name: Build
         path: build
       # run: echo "Upload build folder as an artifact here..."
 
+    - name: Create a Release
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      run: npm semantic-release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Deploy to Staging Server
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
       run: echo "Deploy the application to staging here..."
+
+    - name: Deploy to Production Server
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      run: echo "Deploy the application to production here..."
