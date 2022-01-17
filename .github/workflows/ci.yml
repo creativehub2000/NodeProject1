@@ -53,11 +53,11 @@ jobs:
       run: echo "Run tests here..."
 
     - name: Upload Code Coverage as Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: Code Coverage
-        path: coverage
-      # run: echo "Upload code coverage as an artifact here..."
+      # uses: actions/upload-artifact@v2
+      # with:
+      #   name: Code Coverage
+      #   path: coverage
+      run: echo "Upload code coverage as an artifact here..."
 
     - name: Build Project
       if: github.event_name == 'push'
@@ -73,7 +73,7 @@ jobs:
 
     - name: Create a Release
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-      run: npm semantic-release
+      run: npx semantic-release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
