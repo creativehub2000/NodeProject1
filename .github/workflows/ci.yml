@@ -59,6 +59,13 @@ jobs:
       #   path: coverage
       run: echo "Upload code coverage as an artifact here..."
 
+    - name: Upload Test Coverage as Artifact
+      # uses: actions/upload-artifact@v2
+      # with:
+      #   name: Test Coverage
+      #   path: testcoverage
+      run: echo "Upload test coverage as an artifact here..."
+
     - name: Build Project
       if: github.event_name == 'push'
       run: echo "Build the project here..."
@@ -71,11 +78,16 @@ jobs:
         path: build
       # run: echo "Upload build folder as an artifact here..."
 
+    - name: ZIP Assets
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      run: zip -r build.zip ./build
+        
     - name: Create a Release
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: npx semantic-release
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.SEMANTIC_TOKEN }}
+        # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Deploy to Staging Server
       if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
